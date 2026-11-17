@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "users": [
+    {
+      "id": "demo-alex",
+      "name": "Alex Morgan",
+      "email": "demo@taskflow.local",
+      "image": null
+    },
+    {
+      "id": "demo-sam",
+      "name": "Sam Patel",
+      "email": "sam@taskflow.local",
+      "image": null
+    },
+    {
+      "id": "demo-jordan",
+      "name": "Jordan Lee",
+      "email": "jordan@taskflow.local",
+      "image": null
+    }
+  ],
+  "profiles": [
+    {
+      "id": "profile-demo-alex",
+      "userId": "demo-alex",
+      "displayName": "Alex Morgan",
+      "avatarInitials": "AM",
+      "passwordHash": "$2b$12$RCE7CNhO6gkZk7gVVjVpnOU3mxQZxYd4gXZkryGlmWipqzz9C6Yk2",
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "profile-demo-sam",
+      "userId": "demo-sam",
+      "displayName": "Sam Patel",
+      "avatarInitials": "SP",
+      "passwordHash": "$2b$12$RCE7CNhO6gkZk7gVVjVpnOU3mxQZxYd4gXZkryGlmWipqzz9C6Yk2",
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "profile-demo-jordan",
+      "userId": "demo-jordan",
+      "displayName": "Jordan Lee",
+      "avatarInitials": "JL",
+      "passwordHash": "$2b$12$RCE7CNhO6gkZk7gVVjVpnOU3mxQZxYd4gXZkryGlmWipqzz9C6Yk2",
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    }
+  ],
+  "projects": [
+    {
+      "id": "website-launch",
+      "name": "Website launch",
+      "description": "Prepare the new TaskFlow marketing website.",
+      "ownerId": "demo-alex",
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "mobile-app",
+      "name": "Mobile app",
+      "description": "Plan and test the first mobile experience.",
+      "ownerId": "demo-sam",
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    }
+  ],
+  "projectMembers": [
+    {
+      "id": "member-web-alex",
+      "projectId": "website-launch",
+      "userId": "demo-alex",
+      "joinedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "member-web-sam",
+      "projectId": "website-launch",
+      "userId": "demo-sam",
+      "joinedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "member-web-jordan",
+      "projectId": "website-launch",
+      "userId": "demo-jordan",
+      "joinedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "member-mobile-alex",
+      "projectId": "mobile-app",
+      "userId": "demo-alex",
+      "joinedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "member-mobile-sam",
+      "projectId": "mobile-app",
+      "userId": "demo-sam",
+      "joinedAt": "2026-11-17T08:00:00.000Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-homepage",
+      "projectId": "website-launch",
+      "title": "Design homepage",
+      "description": "Create desktop and mobile layouts for the homepage.",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "dueDate": "2026-11-20T12:00:00.000Z",
+      "assigneeId": "demo-alex",
+      "createdById": "demo-alex",
+      "position": 0,
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "task-copy",
+      "projectId": "website-launch",
+      "title": "Review product copy",
+      "description": "Review headings, feature descriptions, and calls to action.",
+      "status": "IN_REVIEW",
+      "priority": "MEDIUM",
+      "dueDate": "2026-11-19T12:00:00.000Z",
+      "assigneeId": "demo-jordan",
+      "createdById": "demo-alex",
+      "position": 1,
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "task-analytics",
+      "projectId": "website-launch",
+      "title": "Set up analytics",
+      "description": "Define the events needed to measure sign-up completion.",
+      "status": "TODO",
+      "priority": "LOW",
+      "dueDate": null,
+      "assigneeId": null,
+      "createdById": "demo-sam",
+      "position": 2,
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "task-brand",
+      "projectId": "website-launch",
+      "title": "Approve brand colors",
+      "description": "Agree on accessible primary, text, and background colors.",
+      "status": "DONE",
+      "priority": "MEDIUM",
+      "dueDate": "2026-11-16T12:00:00.000Z",
+      "assigneeId": "demo-sam",
+      "createdById": "demo-alex",
+      "position": 3,
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "task-onboarding",
+      "projectId": "mobile-app",
+      "title": "Prototype onboarding",
+      "description": "Build the first-run welcome and sign-in prototype.",
+      "status": "TODO",
+      "priority": "HIGH",
+      "dueDate": "2026-11-24T12:00:00.000Z",
+      "assigneeId": "demo-sam",
+      "createdById": "demo-sam",
+      "position": 0,
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "task-mobile-qa",
+      "projectId": "mobile-app",
+      "title": "Check mobile accessibility",
+      "description": "Test focus order, tap target sizes, and text contrast.",
+      "status": "IN_PROGRESS",
+      "priority": "URGENT",
+      "dueDate": "2026-11-16T12:00:00.000Z",
+      "assigneeId": "demo-alex",
+      "createdById": "demo-sam",
+      "position": 1,
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    }
+  ],
+  "comments": [
+    {
+      "id": "comment-homepage",
+      "taskId": "task-homepage",
+      "authorId": "demo-sam",
+      "body": "Please include a narrow-screen layout for review.",
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "comment-copy",
+      "taskId": "task-copy",
+      "authorId": "demo-alex",
+      "body": "@Jordan Lee The revised headlines are ready to review.",
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "comment-mobile",
+      "taskId": "task-mobile-qa",
+      "authorId": "demo-sam",
+      "body": "Start with keyboard navigation and visible focus states.",
+      "createdAt": "2026-11-17T08:00:00.000Z",
+      "updatedAt": "2026-11-17T08:00:00.000Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notice-mobile",
+      "recipientId": "demo-alex",
+      "type": "TASK_ASSIGNED",
+      "taskId": "task-mobile-qa",
+      "read": false,
+      "createdAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "notice-copy",
+      "recipientId": "demo-jordan",
+      "type": "MENTIONED",
+      "taskId": "task-copy",
+      "read": false,
+      "createdAt": "2026-11-17T08:00:00.000Z"
+    },
+    {
+      "id": "notice-onboarding",
+      "recipientId": "demo-sam",
+      "type": "TASK_ASSIGNED",
+      "taskId": "task-onboarding",
+      "read": true,
+      "createdAt": "2026-11-17T08:00:00.000Z"
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag-design",
+      "name": "Design",
+      "projectId": "website-launch"
+    },
+    {
+      "id": "tag-content",
+      "name": "Content",
+      "projectId": "website-launch"
+    },
+    {
+      "id": "tag-accessibility",
+      "name": "Accessibility",
+      "projectId": "mobile-app"
+    }
+  ],
+  "taskTags": [
+    {
+      "taskId": "task-homepage",
+      "tagId": "tag-design"
+    },
+    {
+      "taskId": "task-brand",
+      "tagId": "tag-design"
+    },
+    {
+      "taskId": "task-copy",
+      "tagId": "tag-content"
+    },
+    {
+      "taskId": "task-mobile-qa",
+      "tagId": "tag-accessibility"
+    }
+  ]
+}
