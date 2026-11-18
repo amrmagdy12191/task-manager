@@ -4,18 +4,38 @@ import { auth, signIn, signOut } from '@/lib/auth'
 import { requireUserId } from '@/lib/access-control'
 import { AuthError } from 'next-auth'
 import { hash } from 'bcryptjs'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createAccount } from '@/lib/data'
 import { signUpSchema, fieldErrors } from '@/lib/auth-validation'
 import { assignAvatarColor, deriveInitials } from '@/lib/avatar'
 import { DataConflict } from '@/lib/data/types'
+import { checkRateLimit, clientIp } from '@/lib/rate-limit'
+import { safeCallbackUrl } from '@/lib/redirects'
 import type { ActionResult } from '@/lib/action-result'
 
 export async function signOutAction() {
   const session = await auth()
   if (!session?.user?.id) redirect('/sign-in')
-  requireUserId(session?.user?.id)
+  requireUserId(session.user.id)
   await signOut({ redirectTo: '/sign-in' })
+}
+
+export async function signInAction(_prevState: ActionResult<never> | null, formData: FormData): Promise<ActionResult<never>> {
+  const h = await headers()
+  const ip = clientIp(h)
+  try { await checkRateLimit(ip) } catch {
+    return { success: false, error: 'Too many sign-in attempts. Please wait a minute before trying again.', code: 'RATE_LIMITED' }
+  }
+  const email = String(formData.get('email') ?? '')
+  const password = String(formData.get('password') ?? '')
+  const callbackUrl = safeCallbackUrl(String(formData.get('callbackUrl') ?? '/'))
+  try { await signIn('credentials', { email, password, redirect: false }) }
+  catch (error) {
+    if (error instanceof AuthError) return { success: false, error: 'Invalid email or password.', code: 'UNAUTHORIZED' }
+    throw error
+  }
+  redirect(callbackUrl)
 }
 
 export async function signUpAction(input: unknown): Promise<ActionResult<{ userId: string }>> {

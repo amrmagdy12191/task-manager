@@ -1,10 +1,11 @@
 'use server'
 
-import { auth } from '@/lib/auth'
+import { auth, signOut } from '@/lib/auth'
 import { requireUserId } from '@/lib/access-control'
 import { getPublicProfile, updateProfile, getPasswordHash, replacePassword } from '@/lib/data'
 import { changePasswordSchema, profileSchema, fieldErrors } from '@/lib/auth-validation'
 import { compare, hash } from 'bcryptjs'
+import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import type { ActionResult } from '@/lib/action-result'
 import type { ProfileInput, PublicProfile } from '@/lib/data/types'
@@ -45,6 +46,8 @@ export async function changePasswordAction(input: unknown): Promise<ActionResult
     }
     const newHash = await hash(parsed.data.newPassword, 12)
     if (!(await replacePassword(session.user.id, currentHash, newHash))) return { success: false, error: 'Current password is incorrect.', code: 'WRONG_PASSWORD' }
-    return { success: true, data: { success: true } }
   } catch { return { success: false, error: 'Unable to update your password. Please try again.', code: 'DB_ERROR' } }
+  // Revoke the JWT cookie outside the try/catch so the NEXT_REDIRECT it throws is not swallowed.
+  await signOut({ redirect: false })
+  redirect('/sign-in')
 }

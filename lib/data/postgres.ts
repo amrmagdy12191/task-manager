@@ -24,9 +24,10 @@ export async function checkDataConnection() {
 }
 
 export async function getPublicProfile(userId: string) {
+  const scoped = withAccessControl(userId)
   const [profile, user] = await Promise.all([
     getUserProfile(userId),
-    databaseRead(db.user.findUnique({ where: { id: userId }, select: { email: true } })),
+    databaseRead(scoped.user.findUnique({ where: { id: userId }, select: { email: true } })),
   ])
   return profile && user ? { ...profile, email: user.email } : null
 }
