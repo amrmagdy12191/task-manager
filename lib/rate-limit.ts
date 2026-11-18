@@ -12,8 +12,9 @@ export async function checkRateLimit(ip: string): Promise<void> {
   }
 }
 
-export function clientIp(headers: Headers, trustProxy: boolean): string {
-  if (!trustProxy) return '127.0.0.1'
+// Always read the first forwarded address; Vercel/Netlify set this reliably.
+// In local dev (no proxy) the header is absent, so all local traffic shares '127.0.0.1'.
+export function clientIp(headers: Headers): string {
   const ip = headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? ''
-  return isIP(ip) ? ip : 'unknown'
+  return isIP(ip) ? ip : '127.0.0.1'
 }

@@ -54,8 +54,9 @@ export async function readDemoData() {
 async function mutate<T>(operation: (data: DemoData) => T): Promise<T> {
   const path = dataFile()
   const previous = writes.get(path) ?? Promise.resolve()
-  const next = previous.catch(() => {}).then(async () => {
+  const next = previous.then(async () => {
     const data = await readDemoData()
+    // operation MUST mutate `data` in place; its return value is passed back to callers.
     const result = operation(data)
     await mkdir(dirname(path), { recursive: true })
     const temporary = `${path}.${randomUUID()}.tmp`

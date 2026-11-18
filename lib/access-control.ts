@@ -1,6 +1,8 @@
 const readOperations = new Set(['findMany', 'findFirst', 'findFirstOrThrow', 'findUnique', 'findUniqueOrThrow', 'count', 'aggregate', 'groupBy'])
 
 const scalarFields: Record<string, readonly string[]> = {
+  // 'password' is intentionally excluded — it must never appear in a scoped read.
+  User: ['id', 'name', 'email', 'emailVerified', 'image', 'createdAt', 'updatedAt'],
   Profile: ['id', 'userId', 'displayName', 'avatarInitials', 'avatarColorIndex', 'createdAt', 'updatedAt'],
   Project: ['id', 'name', 'description', 'ownerId', 'createdAt', 'updatedAt'],
   ProjectMember: ['id', 'projectId', 'userId', 'joinedAt'],
@@ -43,6 +45,7 @@ export function scopeQuery(model: string | undefined, operation: string, args: R
 
   const project = { OR: [{ ownerId: userId }, { members: { some: { userId } } }] }
   const scopes: Record<string, Record<string, unknown>> = {
+    User: { id: userId },
     Profile: { userId },
     Project: project,
     ProjectMember: { project },
@@ -55,7 +58,9 @@ export function scopeQuery(model: string | undefined, operation: string, args: R
   const where = record(args.where)
   return {
     ...args,
-    where: { ...where, AND: [where, scopes[model]] },
+    // Compose caller's conditions with the ownership scope in one AND array.
+    // Spreading `where` at top level would overwrite any top-level AND key the caller set.
+    where: { AND: [where, scopes[model]] },
     ...(model === 'Profile' && operation.startsWith('find') && !args.select
       ? { select: Object.fromEntries(fields.map((field) => [field, true])) }
       : {}),

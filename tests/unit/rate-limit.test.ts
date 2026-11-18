@@ -13,10 +13,10 @@ describe('sign-in rate limiting', () => {
     await vi.advanceTimersByTimeAsync(60_001)
     await expect(checkRateLimit(ip)).resolves.toBeUndefined()
   })
-  it('only accepts forwarded IPs from an explicitly trusted proxy', () => {
+  it('extracts the first forwarded IP, falls back to 127.0.0.1 when absent or invalid', () => {
     const headers = new Headers({ 'x-forwarded-for': '192.0.2.1, 10.0.0.1' })
-    expect(clientIp(headers, false)).toBe('127.0.0.1')
-    expect(clientIp(headers, true)).toBe('192.0.2.1')
-    expect(clientIp(new Headers({ 'x-forwarded-for': 'anything' }), true)).toBe('unknown')
+    expect(clientIp(headers)).toBe('192.0.2.1')
+    expect(clientIp(new Headers({ 'x-forwarded-for': 'anything' }))).toBe('127.0.0.1')
+    expect(clientIp(new Headers())).toBe('127.0.0.1')
   })
 })
