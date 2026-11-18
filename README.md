@@ -1,9 +1,9 @@
 # TaskFlow
 
 A task-management foundation built with Next.js 16 App Router, strict TypeScript,
-Tailwind CSS 3, PostgreSQL, Prisma 5, and Auth.js v5. Phase 0 includes sign-in,
-route protection, a welcome card, connection monitoring, and the complete baseline schema.
-Task boards, sign-up, and other feature screens are intentionally deferred.
+Tailwind CSS 3, PostgreSQL, Prisma 5, and Auth.js v5. Includes sign-up, sign-in,
+route protection, editable profiles and avatars, password changes, a header account menu,
+connection monitoring, and the complete baseline schema. Task boards remain future work.
 
 ## Quick local demo — no database required
 
@@ -29,11 +29,14 @@ Open [localhost:3000](http://localhost:3000) and sign in:
 Saved dummy data: [data/demo-data.json](data/demo-data.json). Additional accounts and
 fixture details: [data/README.md](data/README.md). It includes users, projects, tasks,
 comments, notifications, and tags. The current welcome screen uses the selected user's
-profile; board screens and UI data editing remain future features. Editing the JSON
-changes the saved fixture and takes effect on refresh.
+profile. You can also create an account at `/sign-up` and edit it at `/profile`.
+Board screens remain future work.
 
-`DATA_SOURCE` selects the backend explicitly. Demo mode reads the fixture from disk;
-PostgreSQL mode uses Prisma. It never silently falls back to dummy data if a real database fails.
+`DATA_SOURCE` selects the backend explicitly. Demo mode starts from the fixture and saves
+account/profile/password changes to `.cache/demo-data.json`, which survives restarts and is
+ignored by Git. The checked-in fixture stays unchanged. PostgreSQL mode uses Prisma;
+it never silently falls back to dummy data if a real database fails. See
+[demo storage and reset instructions](data/README.md) for details.
 
 ## PostgreSQL setup (optional)
 
@@ -75,7 +78,8 @@ Requirements: Node.js 22 LTS or newer, npm 10+, and PostgreSQL 15+.
    npm run db:migrate
    ```
 
-   The checked-in `0001_baseline` migration creates all 12 models. Repeating the migration
+   `0001_baseline` creates all 12 models; `0002_auth_profile` migrates password hashes to
+   `User.password` and adds the avatar color index without resetting existing passwords. Repeating the migration
    command is a no-op when the schema is current. The npm wrappers load `.env.local`;
    bare Prisma 5 CLI commands do not. Use `npm run db:deploy` to apply existing migrations
    in deployment environments; never use schema push as a replacement for migrations.
@@ -87,8 +91,8 @@ Requirements: Node.js 22 LTS or newer, npm 10+, and PostgreSQL 15+.
    ```
 
    This explicitly creates or updates one development account and its bcrypt password hash.
-   It never runs automatically and refuses to run with `NODE_ENV=production`. Sign-up is
-   outside Phase 0, so use this account to validate sign-in.
+   It never runs automatically and refuses to run with `NODE_ENV=production`. You can also
+   create accounts through `/sign-up`.
 
 5. Start the app:
 
@@ -129,16 +133,17 @@ npm run test:run
 npm run test:e2e
 ```
 
-Browser tests use `SEED_*` values matching the selected data source (the example file
-already matches the main demo account). They perform real
-logins; no session forgery or skipped login assertions are used. By default Playwright
-starts the app, or reuses an existing local server on port 3000. In CI it starts its own.
+Browser tests always build and start an isolated demo server on port 3010 with a fresh
+copy of the fixture at `.cache/e2e-demo.json`. They perform real logins and leave your
+port-3000 demo accounts unchanged. Keep `SEED_*` test values matching the main demo
+account. Database integration tests separately exercise real PostgreSQL transactions,
+rollback, isolation, profile changes and password replacement.
 
 ## Architecture and boundaries
 
 ```text
-app/(auth)/             Public sign-in page
-app/(protected)/        Guarded welcome page and layout
+app/(auth)/             Public sign-in and sign-up pages
+app/(protected)/        Guarded welcome/profile pages and account header
 app/api/                Auth.js handlers and uncached database health endpoint
 components/             Session/connectivity providers and semantic UI components
 lib/                    Typed configuration, authentication, scoped data access, actions
@@ -150,7 +155,8 @@ proxy.ts                Pre-render session redirect (Next.js 16 middleware conve
 ```
 
 Auth.js manages JWT sessions and CSRF protections; credentials are verified with bcrypt.
-The `Profile.passwordHash` field is never included in session or public profile responses.
+The `User.password` hash is read only for internal credential verification and never
+included in session or public profile responses.
 All application actions authenticate again on the server. Return URLs are restricted to
 local application paths and retain query strings. `/api/health` is deliberately public:
 it validates fixture readability in demo mode or executes `SELECT 1` in PostgreSQL mode.
@@ -159,8 +165,15 @@ The approved plan uses application authorization rather than native PostgreSQL R
 `withAccessControl(userId)` scopes reads across Profile, Project, ProjectMember, Task,
 Comment, Notification, Tag, and TaskTag. It rejects raw queries, auth-table access,
 relation includes, and writes. New feature writes and relation reads require explicit
-resource policies before exposure; the unscoped `db` client is reserved for Auth.js,
-health checks and maintenance scripts. No task-management API is exposed yet.
+resource policies before exposure. Profile writes use the authenticated session's user ID;
+password replacement additionally compares the previous hash to prevent stale overwrites.
+Account and profile creation is atomic. No task-management API is exposed yet.
+
+Sign-in allows ten attempts per minute per client IP using an in-memory limiter. For local
+development, all requests share the loopback bucket. Set `TRUST_PROXY_HEADERS=true` only
+behind a proxy that replaces untrusted `X-Forwarded-For` headers with a verified client IP.
+The limiter is per server process and resets on restart; multiple production instances need
+a shared limiter store. Redis/Upstash environment variables alone do not enable one.
 
 Theme initialization honors a saved light/dark preference or the system preference.
 The theme toggle belongs to the later Views phase. Styling works from 375px upward.

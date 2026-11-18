@@ -10,6 +10,8 @@ const common = {
     try { return ['http:', 'https:'].includes(new URL(value).protocol) } catch { return false }
   }, 'NEXTAUTH_URL must be a valid HTTP(S) URL'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  DEMO_DATA_FILE: z.string().min(1).optional(),
+  TRUST_PROXY_HEADERS: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
 }
 
 const envSchema = z.discriminatedUnion('DATA_SOURCE', [

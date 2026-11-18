@@ -3,6 +3,9 @@ import { randomUUID } from 'node:crypto'
 import { db } from '@/lib/db'
 import { env } from '@/lib/env'
 import { withAccessControl } from '@/lib/db-middleware'
+import { createAccount, getPublicProfile, updateProfile, getPasswordHash, replacePassword } from '@/lib/data/postgres'
+import { DataConflict } from '@/lib/data/types'
+import { hash, compare } from 'bcryptjs'
 
 // Only this explicit test suite writes temporary fixtures; never point it at a shared DB.
 if (env.DATA_SOURCE !== 'postgres' || !['localhost', '127.0.0.1'].includes(new URL(env.DATABASE_URL).hostname)) {
@@ -18,8 +21,8 @@ const scoped = withAccessControl(alice)
 beforeAll(async () => {
   for (const userId of users) {
     await db.user.create({ data: {
-      id: userId, email: `${userId}@example.test`,
-      profile: { create: { id: `profile-${userId}`, displayName: userId, avatarInitials: 'TS', passwordHash: 'private-test-hash' } },
+      id: userId, email: `${userId}@example.test`, password: 'private-test-hash',
+      profile: { create: { id: `profile-${userId}`, displayName: userId, avatarInitials: 'TS' } },
     } })
     await db.project.create({ data: {
       id: `project-${userId}`, name: 'Isolation fixture', ownerId: userId,
@@ -39,6 +42,28 @@ afterAll(async () => {
 })
 
 describe('baseline schema and real database access policies', () => {
+  it('atomically creates an account and profile, handles duplicates, updates and changes credentials', async () => {
+    const input = { email: `signup-${runId}@example.test`, password: await hash('password123', 12), displayName: 'New User', avatarInitials: 'NU', avatarColorIndex: 5 }
+    const account = await createAccount(input)
+    users.push(account.id)
+    expect(Object.keys(account)).toEqual(['id'])
+    await expect(createAccount(input)).rejects.toBeInstanceOf(DataConflict)
+    expect(await getPublicProfile(account.id)).toEqual({ email: input.email, displayName: 'New User', avatarInitials: 'NU', avatarColorIndex: 5 })
+    await updateProfile(account.id, { displayName: 'Edited User', avatarInitials: 'EU', avatarColorIndex: 2 })
+    expect(await getPublicProfile(account.id)).toMatchObject({ displayName: 'Edited User', avatarInitials: 'EU' })
+    expect(await db.user.findUnique({ where: { id: account.id }, select: { name: true } })).toEqual({ name: 'Edited User' })
+    const newHash = await hash('newpassword456', 12)
+    expect(await replacePassword(account.id, input.password, newHash)).toBe(true)
+    expect(await replacePassword(account.id, input.password, 'stale')).toBe(false)
+    expect(await compare('password123', (await getPasswordHash(account.id))!)).toBe(false)
+    expect(await compare('newpassword456', (await getPasswordHash(account.id))!)).toBe(true)
+  })
+
+  it('rolls back User creation if its Profile violates a database constraint', async () => {
+    const email = `rollback-${runId}@example.test`
+    await expect(createAccount({ email, password: 'private-test-hash', displayName: 'Invalid', avatarInitials: 'I', avatarColorIndex: 8 })).rejects.toThrow()
+    expect(await db.user.findUnique({ where: { email }, select: { id: true } })).toBeNull()
+  })
   it('contains all twelve expected models', async () => {
     const rows = await db.$queryRaw<Array<{ table_name: string }>>`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'`
     const names = rows.map((row) => row.table_name)

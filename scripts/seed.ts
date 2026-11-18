@@ -25,12 +25,13 @@ async function main() {
     const profile = {
       displayName: input.SEED_NAME,
       avatarInitials: input.SEED_NAME.split(/\s+/).slice(0, 2).map((word) => word[0]?.toUpperCase() ?? '').join(''),
-      passwordHash,
+      avatarColorIndex: 0,
     }
     await db.user.upsert({
       where: { email: input.SEED_EMAIL },
-      create: { email: input.SEED_EMAIL, name: input.SEED_NAME, profile: { create: profile } },
-      update: { name: input.SEED_NAME, profile: { upsert: { create: profile, update: profile } } },
+      create: { email: input.SEED_EMAIL, name: input.SEED_NAME, password: passwordHash, profile: { create: profile } },
+      update: { name: input.SEED_NAME, password: passwordHash, profile: { upsert: { create: profile, update: profile } } },
+      select: { id: true },
     })
     console.log('Local development user is ready. Use the credentials in your .env.local file.')
   } finally { await db.$disconnect() }

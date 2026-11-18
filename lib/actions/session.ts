@@ -6,7 +6,7 @@ import { getUserProfile } from '@/lib/data'
 import { initials } from '@/lib/initials'
 import type { ActionResult } from '@/lib/action-result'
 
-interface SessionIdentity { userId: string; email: string; displayName: string; avatarInitials: string }
+interface SessionIdentity { userId: string; email: string; displayName: string; avatarInitials: string; avatarColorIndex: number }
 
 export async function getSession(): Promise<ActionResult<SessionIdentity>> {
   const session = await auth()
@@ -20,6 +20,7 @@ export async function getSession(): Promise<ActionResult<SessionIdentity>> {
       email: session.user.email ?? '',
       displayName,
       avatarInitials: profile?.avatarInitials ?? initials(displayName),
+      avatarColorIndex: profile?.avatarColorIndex ?? 0,
     } }
   } catch {
     return { success: false, error: 'Database unavailable', code: 'DB_UNREACHABLE' }

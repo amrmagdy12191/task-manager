@@ -15,6 +15,7 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
+  password      String?   @db.Text
   accounts      Account[]
   sessions      Session[]
   profile       Profile?
@@ -65,9 +66,9 @@ model VerificationToken {
 model Profile {
   id             String   @id @default(cuid())
   userId         String   @unique
-  passwordHash   String?  @db.Text
   displayName    String   // max 100 chars — enforce in application layer
   avatarInitials String   // 2 chars, computed from displayName
+  avatarColorIndex Int    @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 import { logIn } from './helpers'
 
 test.describe('Authentication flows', () => {
@@ -39,6 +39,8 @@ test.describe('Authentication flows', () => {
     await logIn(page)
     await expect(page).toHaveURL('/')
     await page.goto('/sign-in')
+    await expect(page).toHaveURL('/')
+    await page.goto('/sign-up')
     await expect(page).toHaveURL('/')
     await expect(page.getByRole('heading', { name: /Welcome back/ })).toBeVisible()
   })

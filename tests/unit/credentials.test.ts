@@ -19,7 +19,7 @@ describe('credentials verification', () => {
   })
   it('rejects incorrect passwords and returns only public identity for valid passwords', async () => {
     const passwordHash = await hash('correct-test-password', 4)
-    findUnique.mockResolvedValue({ id: 'alice', email: 'alice@example.com', image: null, profile: { displayName: 'Alice', passwordHash } })
+    findUnique.mockResolvedValue({ id: 'alice', email: 'alice@example.com', image: null, password: passwordHash, profile: { displayName: 'Alice' } })
     expect(await authorizeCredentials({ email: 'alice@example.com', password: 'wrong' })).toBeNull()
     expect(await authorizeCredentials({ email: ' ALICE@example.com ', password: 'correct-test-password' })).toEqual({
       id: 'alice', name: 'Alice', email: 'alice@example.com', image: null,
