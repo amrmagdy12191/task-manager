@@ -1,23 +1,26 @@
 {
-  "version": 1,
+  "version": 2,
   "users": [
     {
       "id": "demo-alex",
       "name": "Alex Morgan",
       "email": "demo@taskflow.local",
-      "image": null
+      "image": null,
+      "password": "$2b$12$RCE7CNhO6gkZk7gVVjVpnOU3mxQZxYd4gXZkryGlmWipqzz9C6Yk2"
     },
     {
       "id": "demo-sam",
       "name": "Sam Patel",
       "email": "sam@taskflow.local",
-      "image": null
+      "image": null,
+      "password": "$2b$12$RCE7CNhO6gkZk7gVVjVpnOU3mxQZxYd4gXZkryGlmWipqzz9C6Yk2"
     },
     {
       "id": "demo-jordan",
       "name": "Jordan Lee",
       "email": "jordan@taskflow.local",
-      "image": null
+      "image": null,
+      "password": "$2b$12$RCE7CNhO6gkZk7gVVjVpnOU3mxQZxYd4gXZkryGlmWipqzz9C6Yk2"
     }
   ],
   "profiles": [
@@ -26,27 +29,27 @@
       "userId": "demo-alex",
       "displayName": "Alex Morgan",
       "avatarInitials": "AM",
-      "passwordHash": "$2b$12$RCE7CNhO6gkZk7gVVjVpnOU3mxQZxYd4gXZkryGlmWipqzz9C6Yk2",
       "createdAt": "2026-11-17T08:00:00.000Z",
-      "updatedAt": "2026-11-17T08:00:00.000Z"
+      "updatedAt": "2026-11-17T08:00:00.000Z",
+      "avatarColorIndex": 0
     },
     {
       "id": "profile-demo-sam",
       "userId": "demo-sam",
       "displayName": "Sam Patel",
       "avatarInitials": "SP",
-      "passwordHash": "$2b$12$RCE7CNhO6gkZk7gVVjVpnOU3mxQZxYd4gXZkryGlmWipqzz9C6Yk2",
       "createdAt": "2026-11-17T08:00:00.000Z",
-      "updatedAt": "2026-11-17T08:00:00.000Z"
+      "updatedAt": "2026-11-17T08:00:00.000Z",
+      "avatarColorIndex": 0
     },
     {
       "id": "profile-demo-jordan",
       "userId": "demo-jordan",
       "displayName": "Jordan Lee",
       "avatarInitials": "JL",
-      "passwordHash": "$2b$12$RCE7CNhO6gkZk7gVVjVpnOU3mxQZxYd4gXZkryGlmWipqzz9C6Yk2",
       "createdAt": "2026-11-17T08:00:00.000Z",
-      "updatedAt": "2026-11-17T08:00:00.000Z"
+      "updatedAt": "2026-11-17T08:00:00.000Z",
+      "avatarColorIndex": 0
     }
   ],
   "projects": [

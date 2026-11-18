@@ -1,15 +1,18 @@
 <!--
 SYNC IMPACT REPORT (remove before commit)
 =========================================
-Version change: [UNVERSIONED] → 1.0.0
-Added sections:
-  - Core Principles (5 principles derived from PLAN.md)
-  - Tech Stack & Constraints
-  - Development Workflow
-  - Governance
-Removed sections: none (initial ratification)
-Follow-up TODOs:
-  - RATIFICATION_DATE set to today (2026-11-17); confirm if an earlier date applies.
+Version change: 1.0.0 → 1.1.0
+Modified principles:
+  - I. Managed-Backend-First: replaced "Supabase preferred / no hand-rolled auth" with
+    "Prisma ORM + Auth.js v5 as approved persistence and authentication stack"
+Modified sections:
+  - Tech Stack & Constraints: Supabase → Prisma 5 + Auth.js v5; @hello-pangea/dnd → dnd-kit
+  - Dev Workflow: "Supabase migrations" → "prisma migrate dev"
+Added sections: none
+Removed sections: none
+Follow-up TODOs: none — all placeholders resolved
+Rationale for MINOR bump: material redefinition of approved stack within Principle I
+  (the principle name and intent are unchanged; the mandated tooling is updated).
 =========================================
 -->
 
@@ -17,15 +20,21 @@ Follow-up TODOs:
 
 ## Core Principles
 
-### I. Managed-Backend-First
+### I. Managed-Persistence-First
 
-All persistence, authentication, and real-time capabilities MUST be implemented through a
-managed BaaS (Supabase preferred for this POC). No custom backend server or hand-rolled auth
-logic is permitted. Any feature that could be served by Supabase Auth, Postgres, or Realtime
-MUST use those primitives before reaching for a custom solution.
+All persistence and authentication MUST be implemented through Prisma ORM (PostgreSQL) and
+Auth.js v5 (NextAuth) — the approved stack for this POC. No alternative ORM, raw SQL client,
+or authentication library is permitted without an explicit constitution amendment.
 
-**Rationale:** The POC goal is rapid validation, not infrastructure engineering. A custom
-backend would consume time and introduce operational risk without validating the product.
+Custom business logic (password hashing, server actions, rate limiting) is permitted and
+expected within this stack. What is NOT permitted is introducing a second persistence layer,
+a second auth library, or a managed BaaS (Supabase, Firebase, etc.) without amending this
+constitution first.
+
+**Rationale:** The POC goal is rapid validation using a well-understood, type-safe stack.
+Prisma provides code-first schema management and type-safe queries; Auth.js v5 provides
+session management with the PrismaAdapter. Keeping a single persistence layer avoids
+operational complexity and data-sync issues.
 
 ### II. Minimal Scope (YAGNI)
 
@@ -74,11 +83,13 @@ enhancements. The overdue highlight is a core product requirement from the plan.
 
 ## Tech Stack & Constraints
 
-- **Frontend:** Next.js (App Router) or Vite + React — either is acceptable for the POC.
+- **Frontend:** Next.js 14 (App Router) + TypeScript strict mode.
 - **Styling:** Tailwind CSS only. No styled-components, Emotion, or CSS modules.
-- **Drag-and-Drop:** `@hello-pangea/dnd` (preferred) or native HTML5 drag-and-drop as fallback.
-- **Backend/DB/Auth:** Supabase (Postgres + Auth + Realtime). Firebase is an acceptable
-  alternative if Supabase is unavailable.
+- **Drag-and-Drop:** `dnd-kit` (approved). `@hello-pangea/dnd` and native HTML5 drag-and-drop
+  are NOT used — dnd-kit was selected in the Phase 0 research.
+- **Backend/DB:** PostgreSQL via Prisma ORM 5 (code-first schema, `prisma migrate dev`).
+- **Auth:** Auth.js v5 (NextAuth) with `@auth/prisma-adapter`. Credentials provider only
+  (email + password). No social OAuth in the POC.
 - **Hosting:** Vercel or Netlify (1-click deploy target).
 - **State Management:** React built-ins (useState, useContext, useReducer) or a minimal
   library (Zustand). Redux is out of scope for the POC.
@@ -89,8 +100,8 @@ enhancements. The overdue highlight is a core product requirement from the plan.
   Tasks, Views, Search/Filter, Comments/Notifications).
 - Each feature area MUST have a corresponding route or page-level component before
   sub-components are built.
-- Database schema changes MUST be applied via Supabase migrations (not direct table edits in
-  the dashboard) so the schema is reproducible.
+- Database schema changes MUST be applied via `npx prisma migrate dev` (not direct table
+  edits in any database client) so the schema is reproducible and version-controlled.
 - Pull requests MUST include a brief description of which scope section is addressed.
 - UI changes MUST be manually verified in both light and dark mode before merging.
 
@@ -103,9 +114,10 @@ practice not addressed here defaults to current React/Next.js community best pra
 1. Propose the change in a PR description referencing the affected principle(s).
 2. Obtain explicit approval from the project owner before merging.
 3. Update `CONSTITUTION_VERSION` (MAJOR for principle removal/redefinition, MINOR for
-   additions, PATCH for clarifications) and `LAST_AMENDED_DATE` in this file.
+   additions or material stack updates, PATCH for clarifications) and `LAST_AMENDED_DATE`
+   in this file.
 
 **Compliance:** All PRs must be reviewed against this constitution. A checklist item
 "Verified against constitution" MUST appear in every PR that touches application code.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-17
+**Version**: 1.1.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-18

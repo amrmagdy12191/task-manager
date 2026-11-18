@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { readDemoData } from '@/lib/data/demo'
 
-vi.mock('@/lib/env', () => ({ env: { DATA_SOURCE: 'demo' } }))
+vi.mock('@/lib/env', () => ({ env: { DATA_SOURCE: 'demo', DEMO_DATA_FILE: 'data/demo-data.json' } }))
 vi.mock('@/lib/db', () => { throw new Error('Demo mode must not load PostgreSQL') })
 
 import { authorizeCredentials } from '@/lib/credentials'
@@ -11,8 +11,8 @@ import { checkDataConnection, getUserProfile } from '@/lib/data'
 describe('database-free demo mode', () => {
   it('checks health and serves only the requested public profile without PostgreSQL', async () => {
     await expect(checkDataConnection()).resolves.toBeUndefined()
-    expect(await getUserProfile('demo-alex')).toEqual({ displayName: 'Alex Morgan', avatarInitials: 'AM' })
-    expect(await getUserProfile('demo-sam')).toEqual({ displayName: 'Sam Patel', avatarInitials: 'SP' })
+    expect(await getUserProfile('demo-alex')).toEqual({ displayName: 'Alex Morgan', avatarInitials: 'AM', avatarColorIndex: 0 })
+    expect(await getUserProfile('demo-sam')).toEqual({ displayName: 'Sam Patel', avatarInitials: 'SP', avatarColorIndex: 0 })
     expect(await getUserProfile('unknown')).toBeNull()
     await expect(getUserProfile('')).rejects.toThrow(/UNAUTHORIZED/)
   })

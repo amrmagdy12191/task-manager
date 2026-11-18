@@ -23,7 +23,9 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
         redirect: false,
       })
       if (!result?.ok || result.error) {
-        setError('Invalid email or password.')
+        setError(result?.code === 'RATE_LIMITED'
+          ? 'Too many sign-in attempts. Please wait a minute before trying again.'
+          : 'Invalid email or password.')
         return
       }
       router.push(safeCallbackUrl(callbackUrl))

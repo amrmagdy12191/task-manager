@@ -11,7 +11,8 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 // Application reads use withAccessControl; feature writes must add resource authorization.
 export const db = globalForPrisma.prisma ?? new PrismaClient({
   datasources: { db: { url: env.DATABASE_URL } },
-  log: env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  // Prisma error logs can embed query arguments. Actions report sanitized failures instead.
+  log: [],
 })
 
 if (env.NODE_ENV !== 'production') globalForPrisma.prisma = db

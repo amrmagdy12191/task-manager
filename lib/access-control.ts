@@ -1,7 +1,7 @@
 const readOperations = new Set(['findMany', 'findFirst', 'findFirstOrThrow', 'findUnique', 'findUniqueOrThrow', 'count', 'aggregate', 'groupBy'])
 
 const scalarFields: Record<string, readonly string[]> = {
-  Profile: ['id', 'userId', 'displayName', 'avatarInitials', 'createdAt', 'updatedAt'],
+  Profile: ['id', 'userId', 'displayName', 'avatarInitials', 'avatarColorIndex', 'createdAt', 'updatedAt'],
   Project: ['id', 'name', 'description', 'ownerId', 'createdAt', 'updatedAt'],
   ProjectMember: ['id', 'projectId', 'userId', 'joinedAt'],
   Task: ['id', 'projectId', 'title', 'description', 'status', 'priority', 'dueDate', 'assigneeId', 'createdById', 'position', 'createdAt', 'updatedAt'],
